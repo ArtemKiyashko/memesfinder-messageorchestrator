@@ -3,8 +3,9 @@ using Telegram.Bot.Types;
 
 namespace MemesFinderMessageOrchestrator.Clients
 {
-    internal interface ISendMessageToServiceBus
+    public interface ISendMessageToServiceBus
     {
+        ISendMessageToServiceBus SetNext(ISendMessageToServiceBus next);
         Task SendMessageAsync(Update message);
     }
 }

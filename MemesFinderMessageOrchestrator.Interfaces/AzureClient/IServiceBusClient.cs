@@ -4,6 +4,6 @@ namespace MemesFinderMessageOrchestrator.Interfaces.AzureClient
 {
     public interface IServiceBusClient
     {
-        public ServiceBusSender CreateSender();
+        public ServiceBusSender CreateSender(string topic);
     }
 }

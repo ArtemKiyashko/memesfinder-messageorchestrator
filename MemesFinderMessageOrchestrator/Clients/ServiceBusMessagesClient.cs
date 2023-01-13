@@ -5,21 +5,21 @@ using Microsoft.Extensions.Options;
 
 namespace MemesFinderMessageOrchestrator.Clients
 {
-    public class ServiceBusAllMessagesClient : IServiceBusClient
+    public class ServiceBusMessagesClient : IServiceBusClient
     {
         private readonly ServiceBusClient _serviceBusClient;
         private readonly ServiceBusOptions _serviceBusOptions;
 
-        public ServiceBusAllMessagesClient(ServiceBusClient serviceBusClient, IOptions<ServiceBusOptions> serviceBusOptions)
+        public ServiceBusMessagesClient(ServiceBusClient serviceBusClient, IOptions<ServiceBusOptions> serviceBusOptions)
         {
             _serviceBusClient = serviceBusClient;
             _serviceBusOptions = serviceBusOptions.Value;
         }
 
 
-        public ServiceBusSender CreateSender()
+        public ServiceBusSender CreateSender(string topic)
         {
-            return _serviceBusClient.CreateSender("allmessages");
+            return _serviceBusClient.CreateSender(topic);
         }
     }
 }

@@ -2,5 +2,6 @@
 {
     public class ServiceBusOptions
     {
+        public string FullyQualifiedNamespace { get; set; }
     }
 }

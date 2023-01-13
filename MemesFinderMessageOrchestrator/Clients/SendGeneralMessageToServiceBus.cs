@@ -7,21 +7,22 @@ using Telegram.Bot.Types;
 
 namespace MemesFinderMessageOrchestrator.Clients
 {
-    //send object to the server 
-    public class SendMessageToServiceBus : ISendMessageToServiceBus
+    //send object to the server if it contains a key word
+    public class SendGeneralMessageToServiceBus : AbstractSendMessagesToServiceBus
     {
         private readonly ILogger<MessageOrchestrator> _logger;
         private readonly IServiceBusClient _serviceBusClient;
+        private readonly string _topic = "generalmessages";
 
-        public SendMessageToServiceBus(ILogger<MessageOrchestrator> log, IServiceBusClient serviceBusClient)
+        public SendGeneralMessageToServiceBus(ILogger<MessageOrchestrator> log, IServiceBusClient serviceBusClient)
         {
             _logger = log;
             _serviceBusClient = serviceBusClient;
         }
 
-        public async Task SendMessageAsync(Update message)
+        public override async Task SendMessageAsync(Update message)
         {
-            await using ServiceBusSender sender = _serviceBusClient.CreateSender();
+            await using ServiceBusSender sender = _serviceBusClient.CreateSender(_topic);
             ServiceBusMessage serviceBusMessage = new(message.ToJson());
             await sender.SendMessageAsync(serviceBusMessage);
         }

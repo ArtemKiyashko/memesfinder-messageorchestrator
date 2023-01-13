@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemesFinderMessageOrchestra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemesFinderMessageOrchestrator.Interfaces", "MemesFinderMessageOrchestrator.Interfaces\MemesFinderMessageOrchestrator.Interfaces.csproj", "{02C5DDD6-13D7-4B9D-99E2-EA51A0F9FF07}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemesFinderMessagesOrchestrator.Models", "MemesFinderMessagesOrchestrator.Models\MemesFinderMessagesOrchestrator.Models.csproj", "{2D0E4BDE-DAD5-40E5-BBB7-55FC3DD4A013}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{02C5DDD6-13D7-4B9D-99E2-EA51A0F9FF07}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02C5DDD6-13D7-4B9D-99E2-EA51A0F9FF07}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02C5DDD6-13D7-4B9D-99E2-EA51A0F9FF07}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D0E4BDE-DAD5-40E5-BBB7-55FC3DD4A013}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D0E4BDE-DAD5-40E5-BBB7-55FC3DD4A013}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D0E4BDE-DAD5-40E5-BBB7-55FC3DD4A013}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D0E4BDE-DAD5-40E5-BBB7-55FC3DD4A013}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
