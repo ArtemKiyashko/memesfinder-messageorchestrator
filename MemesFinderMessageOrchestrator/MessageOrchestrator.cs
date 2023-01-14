@@ -1,6 +1,10 @@
+using FluentValidation;
+using MemesFinderMessageOrchestrator.Clients;
+using MemesFinderMessageOrchestrator.Factory;
 using MemesFinderMessageOrchestrator.Interfaces.AzureClient;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 using Telegram.Bot.Types;
 
 namespace MemesFinderMessageOrchestrator
@@ -9,19 +13,38 @@ namespace MemesFinderMessageOrchestrator
     {
         private readonly ILogger<MessageOrchestrator> _logger;
         private readonly IServiceBusClient _serviceBusMessageSender;
+        private readonly IValidator<Message> _messageValidator;
 
         public MessageOrchestrator(
             ILogger<MessageOrchestrator> log,
-            IServiceBusClient serviceBusMessageSender)
+            IServiceBusClient serviceBusMessageSender,
+            IValidator<Message> messageValidator)
         {
             _logger = log;
             _serviceBusMessageSender = serviceBusMessageSender;
+            _messageValidator = messageValidator;
         }
 
         [FunctionName("MessageOrchestrator")]
-        public void Run([ServiceBusTrigger("allmessages", "messageorchestrator", Connection = "ServiceBusOptions")] Update tgMessages)
+        public async Task Run([ServiceBusTrigger("allmessages", "messageorchestrator", Connection = "ServiceBusOptions")] Update tgMessages)
         {
-            _logger.LogInformation($"C# ServiceBus topic trigger function processed message: {tgMessages}");
+            //check that tgMessage contains text
+            Message incomeMessage = MessageProcessFactory.GetMessageToProcess(tgMessages);
+
+            var messageValidationResult = _messageValidator.Validate(incomeMessage);
+
+            if (!messageValidationResult.IsValid)
+            {
+                _logger.LogInformation(messageValidationResult.ToString());
+                return;
+            }
+
+            var keywordMessagesSender = new SendKeywordMessageToServiceBus();
+            var generalMessagesSender = new SendGeneralMessageToServiceBus();
+
+            keywordMessagesSender.SetNext(generalMessagesSender);
+
+            keywordMessagesSender.SendMessageAsync(tgMessages);
         }
     }
 }
