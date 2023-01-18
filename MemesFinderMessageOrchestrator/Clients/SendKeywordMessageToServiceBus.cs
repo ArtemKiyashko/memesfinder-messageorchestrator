@@ -1,13 +1,14 @@
-﻿using Azure;
-using Azure.AI.Language.Conversations;
-using Azure.Identity;
-using Azure.Messaging.ServiceBus;
+﻿using Azure.Messaging.ServiceBus;
+using FluentValidation;
 using MemesFinderMessageOrchestrator.Extentions;
 using MemesFinderMessageOrchestrator.Factory;
 using MemesFinderMessageOrchestrator.Interfaces.AzureClient;
 using MemesFinderMessageOrchestrator.Options;
+using MemesFinderMessagesOrchestrator.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MMemesFinderMessageOrchestrator.Interfaces.AzureClient;
+using System;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 
@@ -19,23 +20,49 @@ namespace MemesFinderMessageOrchestrator.Clients
         private readonly ILogger<MessageOrchestrator> _logger;
         private readonly IServiceBusClient _serviceBusClient;
         private readonly ServiceBusOptions _serviceBusOptions;
+        private readonly IValidator<Message> _messageValidator;
         private readonly MessageAnalysisClientOptions _messageAnalysisClientOptions;
+        private readonly IConversationAnalysisManager _analysisManager;
 
-        public SendKeywordMessageToServiceBus(ILogger<MessageOrchestrator> log, IServiceBusClient serviceBusClient, IOptions<ServiceBusOptions> serviceBusOptions, IOptions<MessageAnalysisClientOptions> messageAnalysisClientOptions)
+
+        public SendKeywordMessageToServiceBus(ILogger<MessageOrchestrator> log,
+            IServiceBusClient serviceBusClient,
+            IOptions<ServiceBusOptions> serviceBusOptions,
+            IOptions<MessageAnalysisClientOptions> messageAnalysisClientOptions,
+            IValidator<Message> messageValidator,
+            IConversationAnalysisManager analysisManager)
         {
             _logger = log;
             _serviceBusClient = serviceBusClient;
             _serviceBusOptions = serviceBusOptions.Value;
             _messageAnalysisClientOptions = messageAnalysisClientOptions.Value;
+            _messageValidator = messageValidator;
+            _analysisManager = analysisManager;
         }
         public override async Task SendMessageAsync(Update message)
         {
-            var messageResponce = RequestToConversationAnalysisClientAsync(message);
+            Message incomeMessage = MessageProcessFactory.GetMessageToProcess(message);
 
-            if (messageResponce.Result.topIntent("MemeRequest"))
+            var messageValidationResult = _messageValidator.Validate(incomeMessage);
+
+            if (!messageValidationResult.IsValid)
             {
+                _logger.LogInformation(messageValidationResult.ToString());
+                return;
+            }
+
+            var messageResponce = _analysisManager.AnalyzeMessage(incomeMessage, _messageAnalysisClientOptions.TargetKindMeme);
+
+            if (!String.IsNullOrEmpty(messageResponce.Result))
+            {
+                TgMessagesModels tgMessageModel = new TgMessagesModels
+                {
+                    Message = incomeMessage,
+                    Keyword = messageResponce.Result
+                };
+
                 await using ServiceBusSender sender = _serviceBusClient.CreateSender(_serviceBusOptions.KeywordMessagesTopic);
-                ServiceBusMessage serviceBusMessage = new(message.ToJson());
+                ServiceBusMessage serviceBusMessage = new(tgMessageModel.ToJson());
                 await sender.SendMessageAsync(serviceBusMessage);
                 _logger.LogInformation($"Message with id {message.Message.MessageId} was sent to the keyword topic");
             }
@@ -44,16 +71,5 @@ namespace MemesFinderMessageOrchestrator.Clients
                 await base.SendMessageAsync(message);
             }
         }
-        //request to ConversationAnalysisClient
-        public async Task<Response> RequestToConversationAnalysisClientAsync(Update message)
-        {
-            DefaultAzureCredential credential = new DefaultAzureCredential();
-            ConversationAnalysisClient clientAnalysis = new ConversationAnalysisClient(_messageAnalysisClientOptions.UriEndpoint, credential);
-            Message incomeMessage = MessageProcessFactory.GetMessageToProcess(message);
-            Response response = await clientAnalysis.AnalyzeConversationAsync(incomeMessage.Text);
-            return response;
-        }
     }
-
-
 }

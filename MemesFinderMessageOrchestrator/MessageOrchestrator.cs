@@ -1,6 +1,5 @@
 using FluentValidation;
 using MemesFinderMessageOrchestrator.Clients;
-using MemesFinderMessageOrchestrator.Factory;
 using MemesFinderMessageOrchestrator.Interfaces.AzureClient;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -28,16 +27,6 @@ namespace MemesFinderMessageOrchestrator
         [FunctionName("MessageOrchestrator")]
         public async Task Run([ServiceBusTrigger("allmessages", "messageorchestrator", Connection = "ServiceBusOptions")] Update tgMessages)
         {
-            //check that tgMessage contains text
-            Message incomeMessage = MessageProcessFactory.GetMessageToProcess(tgMessages);
-
-            var messageValidationResult = _messageValidator.Validate(incomeMessage);
-
-            if (!messageValidationResult.IsValid)
-            {
-                _logger.LogInformation(messageValidationResult.ToString());
-                return;
-            }
 
             var keywordMessagesSender = new SendKeywordMessageToServiceBus();
             var generalMessagesSender = new SendGeneralMessageToServiceBus();
