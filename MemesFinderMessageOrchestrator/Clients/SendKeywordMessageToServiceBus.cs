@@ -51,7 +51,7 @@ namespace MemesFinderMessageOrchestrator.Clients
                 return;
             }
 
-            var messageResponce = _analysisManager.AnalyzeMessage(incomeMessage, _messageAnalysisClientOptions.TargetKindMeme);
+            var messageResponce = _analysisManager.AnalyzeMessage(incomeMessage.Text, _messageAnalysisClientOptions.TargetKindMeme);
 
             if (!String.IsNullOrEmpty(messageResponce.Result))
             {

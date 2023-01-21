@@ -1,7 +1,7 @@
-﻿using Azure.Identity;
+﻿using Azure.AI.Language.Conversations;
+using Azure.Identity;
 using MemesFinderMessageOrchestrator.Clients;
 using MemesFinderMessageOrchestrator.Interfaces.AzureClient;
-using MemesFinderMessageOrchestrator.Manager;
 using MemesFinderMessageOrchestrator.Options;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
@@ -25,24 +25,15 @@ namespace MemesFinderMessageOrchestrator.Extentions
             });
 
             services.AddTransient<IServiceBusClient, ServiceBusMessagesClient>();
+
             return services;
         }
 
-        public static IServiceCollection AddMessageAnalyticsClient(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddConversationAnalyticsClient(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<MessageAnalysisClientOptions>(configuration.GetSection("MessageAnalysisClientOptions"));
 
-            services.AddAzureClients(clientBuilder =>
-            {
-                var provider = services.BuildServiceProvider();
-                var textAnalyticsOptions = provider.GetRequiredService<IOptions<MessageAnalysisClientOptions>>().Value;
-
-                clientBuilder
-                    .AddTextAnalyticsClient(textAnalyticsOptions.Url)
-                    .ConfigureOptions(options => options.DefaultLanguage = textAnalyticsOptions.Language);
-            });
-
-            services.AddTransient<IConversationAnalysisClient, ConversationAnalysisManager>();
+            services.AddSingleton<ConversationAnalysisClient>(factory => new ConversationAnalysisClient(factory.GetRequiredService<IOptions<MessageAnalysisClientOptions>>().Value.UriEndpoint, new DefaultAzureCredential()));
 
             return services;
         }
