@@ -2,7 +2,7 @@
 
 namespace MemesFinderMessageOrchestrator.Interfaces.AzureClient
 {
-    public interface IConversationAnalysisClient
+    public interface IConversationAnalysisMessageClient
     {
         public Task<Response> GetConversationAnalysisAsync(string message);
     }

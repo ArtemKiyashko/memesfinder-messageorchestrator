@@ -22,7 +22,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MemesFinderMessageOrchestrator.Interfaces\MemesFinderMessageOrchestrator.Interfaces.csproj" />
-    <ProjectReference Include="..\MemesFinderMessagesOrchestrator.Models\MemesFinderMessagesOrchestrator.Models.csproj" />
+    <ProjectReference Include="..\MemesFinderMessageOrchestrator.Models\MemesFinderMessageOrchestrator.Models.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\MemesFinderMessageOrchestrator.Interfaces\MemesFinderMessageOrchestrator.Interfaces.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
   </ItemGroup>
 </Project>

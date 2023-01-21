@@ -1,6 +1,6 @@
 ﻿using Telegram.Bot.Types;
 
-namespace MemesFinderMessagesOrchestrator.Models
+namespace MemesFinderMessageOrchestrator.Models
 {
     public class TgMessagesModels
     {

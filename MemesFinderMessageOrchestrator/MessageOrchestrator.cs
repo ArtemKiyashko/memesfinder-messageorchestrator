@@ -11,8 +11,6 @@ namespace MemesFinderMessageOrchestrator
     public class MessageOrchestrator
     {
         private readonly ILogger<MessageOrchestrator> _logger;
-        /*private readonly ISendMessageToServiceBus _serviceBusKeywordSender;
-        private readonly ISendMessageToServiceBus _serviceBusGeneralSender;*/
         private readonly IEnumerable<ISendMessageToServiceBus> _serviceBusSender;
 
         public MessageOrchestrator(

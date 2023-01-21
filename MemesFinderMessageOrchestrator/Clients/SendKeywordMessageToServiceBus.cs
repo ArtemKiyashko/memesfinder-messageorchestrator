@@ -2,12 +2,11 @@
 using FluentValidation;
 using MemesFinderMessageOrchestrator.Extentions;
 using MemesFinderMessageOrchestrator.Factory;
-using MemesFinderMessageOrchestrator.Interfaces.AzureClient;
 using MemesFinderMessageOrchestrator.Options;
-using MemesFinderMessagesOrchestrator.Models;
+using MemesFinderMessageOrchestrator.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using MMemesFinderMessageOrchestrator.Interfaces.AzureClient;
+using MemesFinderMessageOrchestrator.Interfaces.AzureClient;
 using System;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
@@ -51,14 +50,17 @@ namespace MemesFinderMessageOrchestrator.Clients
                 return;
             }
 
-            var messageResponce = _analysisManager.AnalyzeMessage(incomeMessage.Text, _messageAnalysisClientOptions.TargetKindMeme);
+            var messageResponce = await _analysisManager.AnalyzeMessage(
+                incomeMessage.Text,
+                _messageAnalysisClientOptions.TargetIntent,
+                _messageAnalysisClientOptions.TargetCategory);
 
-            if (!String.IsNullOrEmpty(messageResponce.Result))
+            if (!String.IsNullOrEmpty(messageResponce))
             {
                 TgMessagesModels tgMessageModel = new TgMessagesModels
                 {
                     Message = incomeMessage,
-                    Keyword = messageResponce.Result
+                    Keyword = messageResponce
                 };
 
                 await using ServiceBusSender sender = _serviceBusClient.CreateSender(_serviceBusOptions.KeywordMessagesTopic);

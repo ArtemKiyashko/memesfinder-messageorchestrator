@@ -9,7 +9,8 @@ namespace MemesFinderMessageOrchestrator.Options
         public string DeploymentName { get; set; }
         public string StringIndexType { get; set; }
         public string Language { get; set; }
-        public string TargetKindMeme { get; set; }
+        public string TargetIntent { get; set; }
+        public string TargetCategory { get; set; }
 
     }
 }

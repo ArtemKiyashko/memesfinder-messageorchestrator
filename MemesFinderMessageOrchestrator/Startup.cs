@@ -6,7 +6,6 @@ using MemesFinderMessageOrchestrator.Manager;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MMemesFinderMessageOrchestrator.Interfaces.AzureClient;
 
 [assembly: FunctionsStartup(typeof(MemesFinderMessageOrchestrator.Startup))]
 namespace MemesFinderMessageOrchestrator
@@ -26,7 +25,7 @@ namespace MemesFinderMessageOrchestrator
             builder.Services.AddValidatorsFromAssemblyContaining<Startup>();
 
             builder.Services.AddTransient<IConversationAnalysisManager, ConversationAnalysisMessageManager>();
-            builder.Services.AddTransient<IConversationAnalysisClient, ConversationAnalysisMessageClient>();
+            builder.Services.AddTransient<IConversationAnalysisMessageClient, ConversationAnalysisMessageClient>();
 
 
             builder.Services.AddTransient<ISendMessageToServiceBus, SendKeywordMessageToServiceBus>();

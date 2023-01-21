@@ -5,11 +5,11 @@ using MemesFinderMessageOrchestrator.Interfaces.AzureClient;
 using MemesFinderMessageOrchestrator.Options;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
-using static MemesFinderMessagesOrchestrator.Models.RequestConversationAnalysisClientModel;
+using MemesFinderMessageOrchestrator.Models.AnalysisModels;
 
 namespace MemesFinderMessageOrchestrator.Clients
 {
-    internal class ConversationAnalysisMessageClient : IConversationAnalysisClient
+    internal class ConversationAnalysisMessageClient : IConversationAnalysisMessageClient
     {
         private readonly ConversationAnalysisClient _conversationAnalysisClient;
         private readonly MessageAnalysisClientOptions _messageAnalysisClientOptions;
