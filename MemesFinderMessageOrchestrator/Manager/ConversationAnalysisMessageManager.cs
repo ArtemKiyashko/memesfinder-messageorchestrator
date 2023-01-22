@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MemesFinderMessageOrchestrator.Models.AnalysisModels;
 using System.Linq;
 using FluentValidation;
+using MemesFinderMessageOrchestrator.Extentions;
 
 namespace MemesFinderMessageOrchestrator.Manager
 {
@@ -16,6 +17,7 @@ namespace MemesFinderMessageOrchestrator.Manager
         private readonly ILogger<MessageOrchestrator> _logger;
         private readonly IConversationAnalysisMessageClient _conversationAnalysisClient;
         private readonly IValidator<ConversationResponseModel> _validator;
+        private const int MAX_MESSAGE_LENGTH = 1000;
 
         public ConversationAnalysisMessageManager(ILogger<MessageOrchestrator> log,
             IOptions<MessageAnalysisClientOptions> messageAnalysisClientOptions,
@@ -31,7 +33,7 @@ namespace MemesFinderMessageOrchestrator.Manager
         public async Task<string> AnalyzeMessage(string message, string targetIntent, string targetCategoty)
         {
 
-            Response response = await _conversationAnalysisClient.GetConversationAnalysisAsync(message);
+            Response response = await _conversationAnalysisClient.GetConversationAnalysisAsync(message.LimitTo(MAX_MESSAGE_LENGTH));
             var model = response.Content.ToObjectFromJson<ConversationResponseModel>();
 
             var modelValidationResult = _validator.Validate(model);
