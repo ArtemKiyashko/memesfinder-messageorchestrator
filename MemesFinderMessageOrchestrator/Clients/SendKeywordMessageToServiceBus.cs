@@ -66,7 +66,6 @@ namespace MemesFinderMessageOrchestrator.Clients
                 await using ServiceBusSender sender = _serviceBusClient.CreateSender(_serviceBusOptions.KeywordMessagesTopic);
                 ServiceBusMessage serviceBusMessage = new(tgMessageModel.ToJson());
                 await sender.SendMessageAsync(serviceBusMessage);
-                _logger.LogInformation($"Message with id {message.Message.MessageId} was sent to the keyword topic");
             }
             else
             {
