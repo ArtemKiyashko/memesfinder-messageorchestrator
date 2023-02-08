@@ -28,7 +28,9 @@ namespace MemesFinderMessageOrchestrator
             builder.Services.AddTransient<IConversationAnalysisMessageClient, ConversationAnalysisMessageClient>();
 
 
-            builder.Services.AddTransient<ISendMessageToServiceBus, SendKeywordMessageToServiceBus>();
+            if (_functionConfig.GetValue<bool>("ENABLE_AI_ANALYSIS"))
+                builder.Services.AddTransient<ISendMessageToServiceBus, SendKeywordMessageToServiceBus>();
+
             builder.Services.AddTransient<ISendMessageToServiceBus, SendGeneralMessageToServiceBus>();
 
             builder.Services.AddLogging();
