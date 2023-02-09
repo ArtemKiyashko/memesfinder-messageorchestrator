@@ -50,22 +50,24 @@ namespace MemesFinderMessageOrchestrator.Clients
                 return;
             }
 
-            var messageResponce = await _analysisManager.AnalyzeMessage(
+            var messageResponse = await _analysisManager.AnalyzeMessage(
                 incomeMessage.Text,
                 _messageAnalysisClientOptions.TargetIntent,
                 _messageAnalysisClientOptions.TargetCategory);
 
-            if (!String.IsNullOrEmpty(messageResponce))
+            if (!String.IsNullOrEmpty(messageResponse))
             {
                 TgMessagesModels tgMessageModel = new TgMessagesModels
                 {
                     Message = incomeMessage,
-                    Keyword = messageResponce
+                    Keyword = messageResponse
                 };
 
                 await using ServiceBusSender sender = _serviceBusClient.CreateSender(_serviceBusOptions.KeywordMessagesTopic);
                 ServiceBusMessage serviceBusMessage = new(tgMessageModel.ToJson());
                 await sender.SendMessageAsync(serviceBusMessage);
+
+                _logger.LogInformation($"Keyword extracted by AI: {messageResponse}");
             }
             else
             {
