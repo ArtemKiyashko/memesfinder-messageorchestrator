@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MemesFinderMessageOrchestrator.Clients;
+using MemesFinderMessageOrchestrator.Decorators;
 using MemesFinderMessageOrchestrator.Extentions;
 using MemesFinderMessageOrchestrator.Interfaces.AzureClient;
 using MemesFinderMessageOrchestrator.Manager;
@@ -20,16 +21,10 @@ namespace MemesFinderMessageOrchestrator
                 .Build();
 
             builder.Services.AddServiceBusClient(_functionConfig);
-            builder.Services.AddConversationAnalyticsClient(_functionConfig);
-
             builder.Services.AddValidatorsFromAssemblyContaining<Startup>();
 
-            builder.Services.AddTransient<IConversationAnalysisManager, ConversationAnalysisMessageManager>();
-            builder.Services.AddTransient<IConversationAnalysisMessageClient, ConversationAnalysisMessageClient>();
-
-
             if (_functionConfig.GetValue<bool>("ENABLE_AI_ANALYSIS"))
-                builder.Services.AddTransient<ISendMessageToServiceBus, SendKeywordMessageToServiceBus>();
+                builder.Services.AddConversationAnalyticsClient(_functionConfig);
 
             builder.Services.AddTransient<ISendMessageToServiceBus, SendGeneralMessageToServiceBus>();
 

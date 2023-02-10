@@ -14,36 +14,22 @@ namespace MemesFinderMessageOrchestrator.Manager
     public class ConversationAnalysisMessageManager : IConversationAnalysisManager
     {
         private readonly MessageAnalysisClientOptions _messageAnalysisClientOptions;
-        private readonly ILogger<MessageOrchestrator> _logger;
         private readonly IConversationAnalysisMessageClient _conversationAnalysisClient;
         private readonly IValidator<ConversationResponseModel> _validator;
         private const int MAX_MESSAGE_LENGTH = 1000;
 
-        public ConversationAnalysisMessageManager(ILogger<MessageOrchestrator> log,
-            IOptions<MessageAnalysisClientOptions> messageAnalysisClientOptions,
+        public ConversationAnalysisMessageManager(IOptions<MessageAnalysisClientOptions> messageAnalysisClientOptions,
             IConversationAnalysisMessageClient conversationAnalysisClient,
             IValidator<ConversationResponseModel> validator)
         {
             _messageAnalysisClientOptions = messageAnalysisClientOptions.Value;
-            _logger = log;
             _conversationAnalysisClient = conversationAnalysisClient;
             _validator = validator;
         }
 
         public async Task<string> AnalyzeMessage(string message, string targetIntent, string targetCategoty)
         {
-            Response response;
-
-            try
-            {
-                response = await _conversationAnalysisClient.GetConversationAnalysisAsync(message.LimitTo(MAX_MESSAGE_LENGTH));
-            }
-            catch (RequestFailedException ex)
-            {
-                _logger.LogError(ex, "Error requesting LUIS:{0}", ex.Message);
-                return null;
-            }
-
+            Response response = await _conversationAnalysisClient.GetConversationAnalysisAsync(message.LimitTo(MAX_MESSAGE_LENGTH));
             var model = response.Content.ToObjectFromJson<ConversationResponseModel>();
 
             var modelValidationResult = _validator.Validate(model);
