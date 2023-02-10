@@ -32,8 +32,18 @@ namespace MemesFinderMessageOrchestrator.Manager
 
         public async Task<string> AnalyzeMessage(string message, string targetIntent, string targetCategoty)
         {
+            Response response;
 
-            Response response = await _conversationAnalysisClient.GetConversationAnalysisAsync(message.LimitTo(MAX_MESSAGE_LENGTH));
+            try
+            {
+                response = await _conversationAnalysisClient.GetConversationAnalysisAsync(message.LimitTo(MAX_MESSAGE_LENGTH));
+            }
+            catch (RequestFailedException ex)
+            {
+                _logger.LogError(ex, "Error requesting LUIS:{0}", ex.Message);
+                return null;
+            }
+
             var model = response.Content.ToObjectFromJson<ConversationResponseModel>();
 
             var modelValidationResult = _validator.Validate(model);
