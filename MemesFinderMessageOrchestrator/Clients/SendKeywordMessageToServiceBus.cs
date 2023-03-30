@@ -50,6 +50,12 @@ namespace MemesFinderMessageOrchestrator.Clients
                 return;
             }
 
+            if (incomeMessage.Text.IndexOf("мем", 0) < 0)
+            {
+                await base.SendMessageAsync(message);
+                return;
+            }
+
             var messageResponse = await _analysisManager.AnalyzeMessage(
                 incomeMessage.Text,
                 _messageAnalysisClientOptions.TargetIntent,
