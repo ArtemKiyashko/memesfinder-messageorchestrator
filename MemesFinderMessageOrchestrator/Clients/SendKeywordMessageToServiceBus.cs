@@ -50,7 +50,7 @@ namespace MemesFinderMessageOrchestrator.Clients
                 return;
             }
 
-            if (incomeMessage.Text.IndexOf("мем", 0) < 0)
+            if (!incomeMessage.Text.Contains("мем", StringComparison.OrdinalIgnoreCase))
             {
                 await base.SendMessageAsync(message);
                 return;
