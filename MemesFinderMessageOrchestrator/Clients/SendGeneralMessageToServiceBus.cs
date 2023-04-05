@@ -30,7 +30,9 @@ namespace MemesFinderMessageOrchestrator.Clients
             await sender.SendMessageAsync(serviceBusMessage);
         }
 
+        public override bool SupportsMode(AnalysisMode mode)
+        {
+            return mode == AnalysisMode.FULL_MODE || mode == AnalysisMode.SEMI_MODE || mode == AnalysisMode.REGEX;
+        }
     }
-
-
 }

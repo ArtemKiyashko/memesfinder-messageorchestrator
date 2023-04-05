@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using MemesFinderMessageOrchestrator.Options;
+using System.Threading.Tasks;
 using Telegram.Bot.Types;
 
 namespace MemesFinderMessageOrchestrator.Clients
@@ -20,5 +21,6 @@ namespace MemesFinderMessageOrchestrator.Clients
                 await _next.SendMessageAsync(message);
             }
         }
+        public abstract bool SupportsMode(AnalysisMode mode);
     }
 }

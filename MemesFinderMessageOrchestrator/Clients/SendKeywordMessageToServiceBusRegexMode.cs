@@ -2,19 +2,20 @@
 using FluentValidation;
 using MemesFinderMessageOrchestrator.Extentions;
 using MemesFinderMessageOrchestrator.Factory;
-using MemesFinderMessageOrchestrator.Options;
+using MemesFinderMessageOrchestrator.Interfaces.AzureClient;
 using MemesFinderMessageOrchestrator.Models;
+using MemesFinderMessageOrchestrator.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using MemesFinderMessageOrchestrator.Interfaces.AzureClient;
 using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 
 namespace MemesFinderMessageOrchestrator.Clients
 {
-    //send object to the server if it contains a key word
-    public class SendKeywordMessageToServiceBus : AbstractSendMessagesToServiceBus
+    //send an object to the server in KeywordMessagesTopic if it contains a key word. Uses a regular expression to search for a keyword.
+    public class SendKeywordMessageToServiceBusRegexMode : AbstractSendMessagesToServiceBus
     {
         private readonly ILogger<MessageOrchestrator> _logger;
         private readonly IServiceBusClient _serviceBusClient;
@@ -22,9 +23,10 @@ namespace MemesFinderMessageOrchestrator.Clients
         private readonly IValidator<Message> _messageValidator;
         private readonly MessageAnalysisClientOptions _messageAnalysisClientOptions;
         private readonly IConversationAnalysisManager _analysisManager;
+        private readonly string pattern = @"(?:\b\w+\s+)?\b(?:мем(?:ы|чик|асик)?)(?:\s+про)?\s*(.*)";
 
 
-        public SendKeywordMessageToServiceBus(ILogger<MessageOrchestrator> log,
+        public SendKeywordMessageToServiceBusRegexMode(ILogger<MessageOrchestrator> log,
             IServiceBusClient serviceBusClient,
             IOptions<ServiceBusOptions> serviceBusOptions,
             IOptions<MessageAnalysisClientOptions> messageAnalysisClientOptions,
@@ -50,16 +52,13 @@ namespace MemesFinderMessageOrchestrator.Clients
                 return;
             }
 
-            if (!incomeMessage.Text.Contains("мем", StringComparison.OrdinalIgnoreCase))
+            Match match = Regex.Match(incomeMessage.Text, pattern);
+            if (!match.Success)
             {
                 await base.SendMessageAsync(message);
                 return;
             }
-
-            var messageResponse = await _analysisManager.AnalyzeMessage(
-                incomeMessage.Text,
-                _messageAnalysisClientOptions.TargetIntent,
-                _messageAnalysisClientOptions.TargetCategory);
+            var messageResponse = match.Groups[1].Value;
 
             if (!String.IsNullOrEmpty(messageResponse))
             {
@@ -79,6 +78,11 @@ namespace MemesFinderMessageOrchestrator.Clients
             {
                 await base.SendMessageAsync(message);
             }
+        }
+
+        public override bool SupportsMode(AnalysisMode mode)
+        {
+            return mode == AnalysisMode.REGEX;
         }
     }
 }
