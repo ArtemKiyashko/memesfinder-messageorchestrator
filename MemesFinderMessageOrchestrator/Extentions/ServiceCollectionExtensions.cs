@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Azure.AI.Language.Conversations;
+﻿using Azure.AI.Language.Conversations;
 using Azure.Identity;
 using FluentValidation;
 using MemesFinderMessageOrchestrator.Clients;
@@ -40,11 +39,13 @@ namespace MemesFinderMessageOrchestrator.Extentions
 
             services.AddSingleton<ConversationAnalysisClient>(factory => new ConversationAnalysisClient(factory.GetRequiredService<IOptions<MessageAnalysisClientOptions>>().Value.UriEndpoint, new DefaultAzureCredential()));
 
-            services.AddTransient<IConversationAnalysisManager>(factory => {
+            services.AddTransient<IConversationAnalysisManager>(factory =>
+            {
                 var options = factory.GetRequiredService<IOptions<MessageAnalysisClientOptions>>();
                 var client = factory.GetRequiredService<IConversationAnalysisMessageClient>();
                 var validator = factory.GetRequiredService<IValidator<ConversationResponseModel>>();
-                return new ConversationAnalysisMessageManager(options, client, validator); });
+                return new ConversationAnalysisMessageManager(options, client, validator);
+            });
 
             services.Decorate<IConversationAnalysisManager, ConversationAnalysisLoggerDecorator>();
             services.AddTransient<IConversationAnalysisMessageClient, ConversationAnalysisMessageClient>();

@@ -2,12 +2,13 @@
 using FluentValidation;
 using MemesFinderMessageOrchestrator.Extentions;
 using MemesFinderMessageOrchestrator.Factory;
-using MemesFinderMessageOrchestrator.Options;
+using MemesFinderMessageOrchestrator.Interfaces.AzureClient;
 using MemesFinderMessageOrchestrator.Models;
+using MemesFinderMessageOrchestrator.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using MemesFinderMessageOrchestrator.Interfaces.AzureClient;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 
@@ -20,23 +21,19 @@ namespace MemesFinderMessageOrchestrator.Clients
         private readonly IServiceBusClient _serviceBusClient;
         private readonly ServiceBusOptions _serviceBusOptions;
         private readonly IValidator<Message> _messageValidator;
-        private readonly MessageAnalysisClientOptions _messageAnalysisClientOptions;
-        private readonly IConversationAnalysisManager _analysisManager;
-
+        private readonly IEnumerable<IKeywordExtractor> _keywordExtractors;
 
         public SendKeywordMessageToServiceBus(ILogger<MessageOrchestrator> log,
             IServiceBusClient serviceBusClient,
             IOptions<ServiceBusOptions> serviceBusOptions,
-            IOptions<MessageAnalysisClientOptions> messageAnalysisClientOptions,
             IValidator<Message> messageValidator,
-            IConversationAnalysisManager analysisManager)
+            IEnumerable<IKeywordExtractor> keywordExtractors)
         {
             _logger = log;
             _serviceBusClient = serviceBusClient;
             _serviceBusOptions = serviceBusOptions.Value;
-            _messageAnalysisClientOptions = messageAnalysisClientOptions.Value;
             _messageValidator = messageValidator;
-            _analysisManager = analysisManager;
+            _keywordExtractors = keywordExtractors;
         }
         public override async Task SendMessageAsync(Update message)
         {
@@ -50,16 +47,18 @@ namespace MemesFinderMessageOrchestrator.Clients
                 return;
             }
 
-            if (!incomeMessage.Text.Contains("мем", StringComparison.OrdinalIgnoreCase))
-            {
-                await base.SendMessageAsync(message);
-                return;
-            }
+            string messageResponse = null;
 
-            var messageResponse = await _analysisManager.AnalyzeMessage(
-                incomeMessage.Text,
-                _messageAnalysisClientOptions.TargetIntent,
-                _messageAnalysisClientOptions.TargetCategory);
+            foreach (var extractor in _keywordExtractors)
+            {
+                var keyword = await extractor.GetKeywordAsync(incomeMessage);
+
+                if (!String.IsNullOrEmpty(keyword))
+                {
+                    messageResponse = keyword;
+                    break;
+                }
+            }
 
             if (!String.IsNullOrEmpty(messageResponse))
             {

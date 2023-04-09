@@ -11,6 +11,6 @@ namespace MemesFinderMessageOrchestrator.Options
         public string Language { get; set; }
         public string TargetIntent { get; set; }
         public string TargetCategory { get; set; }
-
+        public int AnalysisMode { get; set; }
     }
 }
