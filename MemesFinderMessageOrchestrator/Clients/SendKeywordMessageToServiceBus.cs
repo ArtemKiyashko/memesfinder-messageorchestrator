@@ -8,7 +8,6 @@ using MemesFinderMessageOrchestrator.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 
@@ -21,19 +20,19 @@ namespace MemesFinderMessageOrchestrator.Clients
         private readonly IServiceBusClient _serviceBusClient;
         private readonly ServiceBusOptions _serviceBusOptions;
         private readonly IValidator<Message> _messageValidator;
-        private readonly IEnumerable<IKeywordExtractor> _keywordExtractors;
+        private readonly IKeywordExtractor _keywordExtractor;
 
         public SendKeywordMessageToServiceBus(ILogger<MessageOrchestrator> log,
             IServiceBusClient serviceBusClient,
             IOptions<ServiceBusOptions> serviceBusOptions,
             IValidator<Message> messageValidator,
-            IEnumerable<IKeywordExtractor> keywordExtractors)
+            IKeywordExtractor keywordExtractor)
         {
             _logger = log;
             _serviceBusClient = serviceBusClient;
             _serviceBusOptions = serviceBusOptions.Value;
             _messageValidator = messageValidator;
-            _keywordExtractors = keywordExtractors;
+            _keywordExtractor = keywordExtractor;
         }
         public override async Task SendMessageAsync(Update message)
         {
@@ -47,18 +46,7 @@ namespace MemesFinderMessageOrchestrator.Clients
                 return;
             }
 
-            string messageResponse = null;
-
-            foreach (var extractor in _keywordExtractors)
-            {
-                var keyword = await extractor.GetKeywordAsync(incomeMessage);
-
-                if (!String.IsNullOrEmpty(keyword))
-                {
-                    messageResponse = keyword;
-                    break;
-                }
-            }
+            string messageResponse = await _keywordExtractor.GetKeywordAsync(incomeMessage);
 
             if (!String.IsNullOrEmpty(messageResponse))
             {

@@ -18,19 +18,12 @@ namespace MemesFinderMessageOrchestrator.Clients
         }
         public async Task<string> GetKeywordAsync(Message incomeMessage)
         {
-            if ((AnalysisMode)_messageAnalysisClientOptions.AnalysisMode == AnalysisMode.FULL_MODE)
-            {
-                var messageResponse = await _analysisManager.AnalyzeMessage(
-                    incomeMessage.Text,
-                    _messageAnalysisClientOptions.TargetIntent,
-                    _messageAnalysisClientOptions.TargetCategory);
+            var messageResponse = await _analysisManager.AnalyzeMessage(
+                incomeMessage.Text,
+                _messageAnalysisClientOptions.TargetIntent,
+                _messageAnalysisClientOptions.TargetCategory);
 
-                return messageResponse;
-            }
-            else
-            {
-                return string.Empty;
-            }
+            return messageResponse;
         }
     }
 }
