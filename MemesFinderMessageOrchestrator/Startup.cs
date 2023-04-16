@@ -23,27 +23,8 @@ namespace MemesFinderMessageOrchestrator
             builder.Services.AddServiceBusClient(_functionConfig);
             builder.Services.AddValidatorsFromAssemblyContaining<Startup>();
 
-            builder.Services.AddScoped<KeywordExtractorFullMode>();
-            builder.Services.AddScoped<KeywordExtractorSemiMode>();
-            builder.Services.AddScoped<KeywordExtractorRegexMode>();
-
-            builder.Services.AddScoped<IKeywordExtractor>((provider) =>
-            {
-                AnalysisMode mode = (AnalysisMode)_functionConfig.GetValue<int>("ANALYSIS_MODE");
-
-                switch (mode)
-                {
-                    case AnalysisMode.FULL_MODE:
-                        return provider.GetService<KeywordExtractorFullMode>();
-                    case AnalysisMode.SEMI_MODE:
-                        return provider.GetService<KeywordExtractorSemiMode>();
-                    case AnalysisMode.REGEX:
-                        return provider.GetService<KeywordExtractorRegexMode>();
-                    default:
-                        throw new InvalidOperationException($"Unsupported AnalysisMode: {mode}");
-                }
-            });
-
+            builder.Services.AddConversationAnalyticsClient(_functionConfig);
+            
             builder.Services.AddTransient<ISendMessageToServiceBus, SendGeneralMessageToServiceBus>();
 
             builder.Services.AddLogging();

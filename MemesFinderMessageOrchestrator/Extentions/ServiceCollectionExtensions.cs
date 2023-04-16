@@ -1,4 +1,5 @@
-﻿using Azure.AI.Language.Conversations;
+﻿using System;
+using Azure.AI.Language.Conversations;
 using Azure.Identity;
 using FluentValidation;
 using MemesFinderMessageOrchestrator.Clients;
@@ -50,6 +51,27 @@ namespace MemesFinderMessageOrchestrator.Extentions
             services.Decorate<IConversationAnalysisManager, ConversationAnalysisLoggerDecorator>();
             services.AddTransient<IConversationAnalysisMessageClient, ConversationAnalysisMessageClient>();
             services.AddTransient<ISendMessageToServiceBus, SendKeywordMessageToServiceBus>();
+            
+            services.AddScoped<KeywordExtractorFullMode>();
+            services.AddScoped<KeywordExtractorSemiMode>();
+            services.AddScoped<KeywordExtractorRegexMode>();
+
+            services.AddScoped<IKeywordExtractor>((provider) =>
+            {
+                AnalysisMode mode = (AnalysisMode)configuration.GetValue<int>("ANALYSIS_MODE");
+
+                switch (mode)
+                {
+                    case AnalysisMode.FULL_MODE:
+                        return provider.GetService<KeywordExtractorFullMode>();
+                    case AnalysisMode.SEMI_MODE:
+                        return provider.GetService<KeywordExtractorSemiMode>();
+                    case AnalysisMode.REGEX:
+                        return provider.GetService<KeywordExtractorRegexMode>();
+                    default:
+                        throw new InvalidOperationException($"Unsupported AnalysisMode: {mode}");
+                }
+            });
 
             return services;
         }
