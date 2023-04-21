@@ -9,7 +9,7 @@ using Telegram.Bot.Types;
 
 namespace MemesFinderMessageOrchestrator.Clients
 {
-    //send object to the server if it contains a key word
+    //send object to the server to General topic
     public class SendGeneralMessageToServiceBus : AbstractSendMessagesToServiceBus
     {
         private readonly ILogger<MessageOrchestrator> _logger;
@@ -29,8 +29,5 @@ namespace MemesFinderMessageOrchestrator.Clients
             ServiceBusMessage serviceBusMessage = new(message.ToJson());
             await sender.SendMessageAsync(serviceBusMessage);
         }
-
     }
-
-
 }

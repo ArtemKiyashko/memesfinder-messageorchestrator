@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
 using Azure.AI.Language.Conversations;
 using Azure.Identity;
 using FluentValidation;
@@ -40,15 +40,38 @@ namespace MemesFinderMessageOrchestrator.Extentions
 
             services.AddSingleton<ConversationAnalysisClient>(factory => new ConversationAnalysisClient(factory.GetRequiredService<IOptions<MessageAnalysisClientOptions>>().Value.UriEndpoint, new DefaultAzureCredential()));
 
-            services.AddTransient<IConversationAnalysisManager>(factory => {
+            services.AddTransient<IConversationAnalysisManager>(factory =>
+            {
                 var options = factory.GetRequiredService<IOptions<MessageAnalysisClientOptions>>();
                 var client = factory.GetRequiredService<IConversationAnalysisMessageClient>();
                 var validator = factory.GetRequiredService<IValidator<ConversationResponseModel>>();
-                return new ConversationAnalysisMessageManager(options, client, validator); });
+                return new ConversationAnalysisMessageManager(options, client, validator);
+            });
 
             services.Decorate<IConversationAnalysisManager, ConversationAnalysisLoggerDecorator>();
             services.AddTransient<IConversationAnalysisMessageClient, ConversationAnalysisMessageClient>();
             services.AddTransient<ISendMessageToServiceBus, SendKeywordMessageToServiceBus>();
+            
+            services.AddScoped<KeywordExtractorFullMode>();
+            services.AddScoped<KeywordExtractorSemiMode>();
+            services.AddScoped<KeywordExtractorRegexMode>();
+
+            services.AddScoped<IKeywordExtractor>((provider) =>
+            {
+                AnalysisMode mode = (AnalysisMode)configuration.GetValue<int>("ANALYSIS_MODE");
+
+                switch (mode)
+                {
+                    case AnalysisMode.FULL_MODE:
+                        return provider.GetService<KeywordExtractorFullMode>();
+                    case AnalysisMode.SEMI_MODE:
+                        return provider.GetService<KeywordExtractorSemiMode>();
+                    case AnalysisMode.REGEX:
+                        return provider.GetService<KeywordExtractorRegexMode>();
+                    default:
+                        throw new InvalidOperationException($"Unsupported AnalysisMode: {mode}");
+                }
+            });
 
             return services;
         }
