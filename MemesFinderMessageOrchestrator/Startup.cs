@@ -6,6 +6,7 @@ using MemesFinderMessageOrchestrator.Options;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 
 [assembly: FunctionsStartup(typeof(MemesFinderMessageOrchestrator.Startup))]
@@ -27,7 +28,10 @@ namespace MemesFinderMessageOrchestrator
             
             builder.Services.AddTransient<ISendMessageToServiceBus, SendGeneralMessageToServiceBus>();
 
-            builder.Services.AddLogging();
+            builder.Services.AddLogging(logBuilder =>
+            {
+                logBuilder.AddConsole();
+            });
         }
     }
 }
