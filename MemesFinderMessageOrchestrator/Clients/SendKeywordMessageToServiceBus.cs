@@ -16,13 +16,13 @@ namespace MemesFinderMessageOrchestrator.Clients
     //send object to the server if it contains a key word
     public class SendKeywordMessageToServiceBus : AbstractSendMessagesToServiceBus
     {
-        private readonly ILogger<MessageOrchestrator> _logger;
+        private readonly ILogger<SendKeywordMessageToServiceBus> _logger;
         private readonly IServiceBusClient _serviceBusClient;
         private readonly ServiceBusOptions _serviceBusOptions;
         private readonly IValidator<Message> _messageValidator;
         private readonly IKeywordExtractor _keywordExtractor;
 
-        public SendKeywordMessageToServiceBus(ILogger<MessageOrchestrator> log,
+        public SendKeywordMessageToServiceBus(ILogger<SendKeywordMessageToServiceBus> log,
             IServiceBusClient serviceBusClient,
             IOptions<ServiceBusOptions> serviceBusOptions,
             IValidator<Message> messageValidator,

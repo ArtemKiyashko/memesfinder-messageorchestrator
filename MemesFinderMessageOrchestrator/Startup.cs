@@ -30,7 +30,6 @@ namespace MemesFinderMessageOrchestrator
 
             builder.Services.AddLogging(logBuilder =>
             {
-                logBuilder.AddApplicationInsights();
                 logBuilder.AddConsole();
             });
         }

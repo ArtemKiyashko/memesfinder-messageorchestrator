@@ -12,11 +12,11 @@ namespace MemesFinderMessageOrchestrator.Clients
     //send object to the server to General topic
     public class SendGeneralMessageToServiceBus : AbstractSendMessagesToServiceBus
     {
-        private readonly ILogger<MessageOrchestrator> _logger;
+        private readonly ILogger<SendGeneralMessageToServiceBus> _logger;
         private readonly IServiceBusClient _serviceBusClient;
         private readonly ServiceBusOptions _serviceBusOptions;
 
-        public SendGeneralMessageToServiceBus(ILogger<MessageOrchestrator> log, IServiceBusClient serviceBusClient, IOptions<ServiceBusOptions> options)
+        public SendGeneralMessageToServiceBus(ILogger<SendGeneralMessageToServiceBus> log, IServiceBusClient serviceBusClient, IOptions<ServiceBusOptions> options)
         {
             _logger = log;
             _serviceBusClient = serviceBusClient;

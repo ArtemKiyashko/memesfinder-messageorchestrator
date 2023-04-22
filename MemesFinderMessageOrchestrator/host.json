@@ -9,6 +9,11 @@
         },
         "snapshotConfiguration": {
             "isEnabled": true
+        },
+        "logLevel": {
+            "MemesFinderMessageOrchestrator.Clients.SendKeywordMessageToServiceBus": "Information",
+            "MemesFinderMessageOrchestrator.Clients.SendGeneralMessageToServiceBus": "Information",
+            "MemesFinderMessageOrchestrator.Clients.MessageOrchestrator": "Information"
         }
     }
 }
