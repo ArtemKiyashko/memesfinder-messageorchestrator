@@ -13,7 +13,8 @@
         "logLevel": {
             "MemesFinderMessageOrchestrator.Clients.SendKeywordMessageToServiceBus": "Information",
             "MemesFinderMessageOrchestrator.Clients.SendGeneralMessageToServiceBus": "Information",
-            "MemesFinderMessageOrchestrator.Clients.MessageOrchestrator": "Information"
+            "MemesFinderMessageOrchestrator.Clients.MessageOrchestrator": "Information",
+            "MemesFinderMessageOrchestrator.MessageOrchestrator": "Information"
         }
     }
 }
