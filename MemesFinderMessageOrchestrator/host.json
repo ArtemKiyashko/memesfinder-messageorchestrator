@@ -7,11 +7,8 @@
                 "excludedTypes": "Request"
             }
         },
-        "logLevel": {
-            "default": "Information",
-            "Host.Results": "Information",
-            "Host.Aggregator": "Information",
-            "Function": "Information"
+        "snapshotConfiguration": {
+            "isEnabled": true
         }
     }
 }
