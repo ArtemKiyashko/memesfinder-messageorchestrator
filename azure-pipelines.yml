@@ -12,7 +12,7 @@ variables:
   azureSubscription: 'Azure Vostok (60447d26-d388-4a2b-a8cd-45114f7099a8)'
 
   # Agent VM image name
-  vmImageName: 'windows-2019'
+  vmImageName: 'windows-2022'
 
   # Working Directory
   workingDirectory: '$(System.DefaultWorkingDirectory)/MemesFinderMessageOrchestrator'
@@ -28,6 +28,12 @@ stages:
       vmImage: $(vmImageName)
 
     steps:
+    - task: UseDotNet@2
+      displayName: 'Use .NET 6 SDK'
+      inputs:
+        packageType: 'sdk'
+        version: '6.x'
+
     - task: DotNetCoreCLI@2
       displayName: Build
       inputs:
