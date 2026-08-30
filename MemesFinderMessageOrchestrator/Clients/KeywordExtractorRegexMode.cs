@@ -1,4 +1,5 @@
-﻿using MemesFinderMessageOrchestrator.Interfaces.AzureClient;
+﻿using MemesFinderMessageOrchestrator.Extentions;
+using MemesFinderMessageOrchestrator.Interfaces.AzureClient;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
@@ -12,7 +13,7 @@ namespace MemesFinderMessageOrchestrator.Clients
         public async Task<string> GetKeywordAsync(Message incomeMessage)
         {
 
-            Match match = Regex.Match(incomeMessage.Text, pattern);
+            Match match = Regex.Match(incomeMessage.GetEffectiveText(), pattern);
 
             if (!match.Success)
             {

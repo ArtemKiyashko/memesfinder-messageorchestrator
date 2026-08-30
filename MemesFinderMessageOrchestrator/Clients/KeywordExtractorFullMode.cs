@@ -1,4 +1,5 @@
-﻿using MemesFinderMessageOrchestrator.Interfaces.AzureClient;
+﻿using MemesFinderMessageOrchestrator.Extentions;
+using MemesFinderMessageOrchestrator.Interfaces.AzureClient;
 using MemesFinderMessageOrchestrator.Options;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace MemesFinderMessageOrchestrator.Clients
         public async Task<string> GetKeywordAsync(Message incomeMessage)
         {
             var messageResponse = await _analysisManager.AnalyzeMessage(
-                incomeMessage.Text,
+                incomeMessage.GetEffectiveText(),
                 _messageAnalysisClientOptions.TargetIntent,
                 _messageAnalysisClientOptions.TargetCategory);
 
