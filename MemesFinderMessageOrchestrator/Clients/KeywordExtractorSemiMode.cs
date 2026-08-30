@@ -1,4 +1,5 @@
-﻿using MemesFinderMessageOrchestrator.Interfaces.AzureClient;
+﻿using MemesFinderMessageOrchestrator.Extentions;
+using MemesFinderMessageOrchestrator.Interfaces.AzureClient;
 using MemesFinderMessageOrchestrator.Options;
 using Microsoft.Extensions.Options;
 using System;
@@ -19,13 +20,15 @@ namespace MemesFinderMessageOrchestrator.Clients
         }
         public async Task<string> GetKeywordAsync(Message incomeMessage)
         {
-            if (!incomeMessage.Text.Contains("мем", StringComparison.OrdinalIgnoreCase))
+            string effectiveText = incomeMessage.GetEffectiveText();
+
+            if (!effectiveText.Contains("мем", StringComparison.OrdinalIgnoreCase))
             {
                 return string.Empty; ;
             }
 
             var messageResponse = await _analysisManager.AnalyzeMessage(
-                incomeMessage.Text,
+                effectiveText,
                 _messageAnalysisClientOptions.TargetIntent,
                 _messageAnalysisClientOptions.TargetCategory);
 

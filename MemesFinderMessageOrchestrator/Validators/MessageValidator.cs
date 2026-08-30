@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using MemesFinderMessageOrchestrator.Extentions;
 using Telegram.Bot.Types;
 
 namespace MemesFinderMessageOrchestrator.Validators
@@ -7,7 +8,7 @@ namespace MemesFinderMessageOrchestrator.Validators
     {
         public MessageValidator()
         {
-            RuleFor(message => message.Text).Cascade(CascadeMode.Stop).NotNull().NotEmpty();
+            RuleFor(message => message.GetEffectiveText()).Cascade(CascadeMode.Stop).NotNull().NotEmpty();
         }
     }
 }
