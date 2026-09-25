@@ -5,6 +5,7 @@
         public string FullyQualifiedNamespace { get; set; }
         public string GeneralMessagesTopic { get; set; }
         public string KeywordMessagesTopic { get; set; }
+        public string TextMessagesTopic { get; set; }
     }
 }
 
