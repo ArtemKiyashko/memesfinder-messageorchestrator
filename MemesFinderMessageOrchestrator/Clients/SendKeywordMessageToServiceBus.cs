@@ -3,7 +3,6 @@ using FluentValidation;
 using MemesFinderMessageOrchestrator.Extentions;
 using MemesFinderMessageOrchestrator.Factory;
 using MemesFinderMessageOrchestrator.Interfaces.AzureClient;
-using MemesFinderMessageOrchestrator.Models;
 using MemesFinderMessageOrchestrator.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -50,17 +49,11 @@ namespace MemesFinderMessageOrchestrator.Clients
 
             if (!String.IsNullOrEmpty(messageResponse))
             {
-                TgMessagesModels tgMessageModel = new TgMessagesModels
-                {
-                    Message = incomeMessage,
-                    Keyword = messageResponse
-                };
-
-                await using ServiceBusSender sender = _serviceBusClient.CreateSender(_serviceBusOptions.KeywordMessagesTopic);
-                ServiceBusMessage serviceBusMessage = new(tgMessageModel.ToJson());
+                await using ServiceBusSender sender = _serviceBusClient.CreateSender(_serviceBusOptions.TextMessagesTopic);
+                ServiceBusMessage serviceBusMessage = new(message.ToJson());
                 await sender.SendMessageAsync(serviceBusMessage);
 
-                _logger.LogInformation($"Keyword extracted by AI: {messageResponse}");
+                _logger.LogInformation($"Direct meme request detected: {messageResponse}");
             }
             else
             {
