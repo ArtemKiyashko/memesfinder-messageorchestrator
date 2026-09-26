@@ -1,6 +1,7 @@
 ﻿using System;
 using Azure.AI.Language.Conversations;
 using Azure.Identity;
+using Azure.Messaging.ServiceBus;
 using FluentValidation;
 using MemesFinderMessageOrchestrator.Clients;
 using MemesFinderMessageOrchestrator.Decorators;
@@ -8,7 +9,6 @@ using MemesFinderMessageOrchestrator.Interfaces.AzureClient;
 using MemesFinderMessageOrchestrator.Manager;
 using MemesFinderMessageOrchestrator.Models.AnalysisModels;
 using MemesFinderMessageOrchestrator.Options;
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -21,12 +21,10 @@ namespace MemesFinderMessageOrchestrator.Extentions
         {
             services.Configure<ServiceBusOptions>(configuration.GetSection("ServiceBusOptions"));
 
-            services.AddAzureClients(clientBuilder =>
+            services.AddSingleton(provider =>
             {
-                var provider = services.BuildServiceProvider();
-
-                clientBuilder.UseCredential(new DefaultAzureCredential());
-                clientBuilder.AddServiceBusClientWithNamespace(provider.GetRequiredService<IOptions<ServiceBusOptions>>().Value.FullyQualifiedNamespace);
+                var options = provider.GetRequiredService<IOptions<ServiceBusOptions>>().Value;
+                return new ServiceBusClient(options.FullyQualifiedNamespace, new DefaultAzureCredential());
             });
 
             services.AddTransient<IServiceBusClient, ServiceBusMessagesClient>();
