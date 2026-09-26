@@ -1,6 +1,6 @@
 using MemesFinderMessageOrchestrator.Clients;
 using MemesFinderMessageOrchestrator.Manager;
-using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -21,7 +21,7 @@ namespace MemesFinderMessageOrchestrator
             _serviceBusSender = serviceBusSender;
         }
 
-        [FunctionName("MessageOrchestrator")]
+        [Function("MessageOrchestrator")]
         public async Task Run([ServiceBusTrigger("allmessages", "orchestrator", Connection = "ServiceBusOptions")] Update tgMessages)
         {
             var chain = new ChainBuilder().BuildChain(_serviceBusSender);
